@@ -1,0 +1,19 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:log4jdbc:oracle:thin:@db:1521/FREEPDB1 #Oracle Free의 기본 PDB를 애플리케이션 DB로 사용
+      SPRING_DATASOURCE_USERNAME: ${ORACLE_USER}
+      SPRING_DATASOURCE_PASSWORD: ${ORACLE_USER_PASSWORD}
+    depends_on:
+      - db
+
+  db:
+    image: container-registry.oracle.com/database/free:latest-lite
+    platform: linux/amd64
+    environment:
+      ORACLE_PWD: ${ORACLE_PASSWORD}
+    volumes:
+      - ./oracle:/opt/oracle/oradata
