@@ -2,6 +2,7 @@ package com.bbodeum.container;
 
 import javax.persistence.EntityManagerFactory;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -14,15 +15,26 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 public class ApplicationContext {
-	
+
+	@Value("${spring.datasource.url}")
+	private String jdbcUrl;
+
+	@Value("${spring.datasource.username}")
+	private String username;
+
+	@Value("${spring.datasource.password}")
+	private String password;
+
 	@Bean
 	public HikariConfig hikariConfig() {
 		HikariConfig config = new HikariConfig();
+
 		config.setDriverClassName("net.sf.log4jdbc.sql.jdbcapi.DriverSpy"); //sql구문도 추적
-		config.setJdbcUrl("jdbc:log4jdbc:oracle:thin:@Localhost:1521:xe");
-		config.setUsername("bbotest");
-		config.setPassword("bbotest");
+		config.setJdbcUrl(jdbcUrl);
+		config.setUsername(username);
+		config.setPassword(password);
 		config.setMinimumIdle(1);
+
 		return config;
 	}
 	
