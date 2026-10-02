@@ -61,4 +61,18 @@ public class FileContentStoreImpl implements FileContentStore {
             throw new RuntimeException("이미지 저장에 실패했습니다.", e);
         }
     }
+
+    @Override
+    public String storeByteArray(byte[] content, String saveName) {
+        Path path = uploadPath.resolve(saveName);
+
+        try {
+            Files.createDirectories(path.getParent());
+            Files.write(path, content);
+
+            return saveName;
+        } catch (IOException e) {
+            throw new RuntimeException("파일 저장에 실패했습니다.", e);
+        }
+    }
 }

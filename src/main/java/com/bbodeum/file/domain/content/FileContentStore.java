@@ -7,4 +7,5 @@ import java.awt.image.BufferedImage;
 public interface FileContentStore {
     String store(MultipartFile file);
     String storeBufferedImage(BufferedImage bufferedImage);
+    String storeByteArray(byte[] content, String saveName);
 }
