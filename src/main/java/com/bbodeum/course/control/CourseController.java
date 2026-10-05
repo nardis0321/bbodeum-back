@@ -1,19 +1,17 @@
 package com.bbodeum.course.control;
 
-import java.io.File;
-import java.net.URLEncoder;
-import java.nio.file.Files;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.bbodeum.file.application.FileFacade;
 import com.bbodeum.file.domain.FileCommand;
+import com.bbodeum.file.domain.FileInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,25 +45,16 @@ public class CourseController {
 	
 	@GetMapping(value = "classes/{courseId}/img", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> courseDetailImg(@PathVariable("courseId") Long courseId) throws FindException {
-		String saveDirectory = "C:\\bbodeum\\attach";
-		String fileName = "t_" + courseId.toString()+ ".jpg";
-		File file = new File(saveDirectory, fileName);
-		if (!file.exists()) {
-			throw new FindException("교육 이미지가 없습니다");
-		}
-		try {
-			HttpHeaders headers = new HttpHeaders();
-			String contentType = Files.probeContentType(file.toPath());
-			headers.add(HttpHeaders.CONTENT_TYPE, contentType);
-			headers.add(HttpHeaders.CONTENT_LENGTH, "" + file.length());
-			headers.add(HttpHeaders.CONTENT_DISPOSITION,
-					"inline;filename=" + URLEncoder.encode(file.getName(), "UTF-8"));
 
-			byte[] bArr = FileCopyUtils.copyToByteArray(file);
-			return new ResponseEntity<>(bArr, headers, HttpStatus.OK);
-		} catch (Exception e) {
-			throw new FindException("교육 이미지 처리에 실패했습니다");
-		}
+		Optional<byte[]> bytes = fileFacade.retrieveCourseImage(courseId);
+		if (bytes.isEmpty()) return ResponseEntity.notFound().build();
+
+		byte[] bArr = bytes.get();
+		FileInfo fileInfo = fileFacade.retrieveFileInfo(courseId);
+		return ResponseEntity.ok()
+				.contentType(MediaType.parseMediaType(fileInfo.getContentType()))
+				.contentLength(bArr.length)
+				.body(bArr);
 	}
 	
 	@GetMapping(value="info", produces = MediaType.APPLICATION_JSON_VALUE)

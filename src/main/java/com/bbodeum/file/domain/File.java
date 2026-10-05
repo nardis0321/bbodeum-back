@@ -25,6 +25,7 @@ public class File extends BaseTimeEntity {
     private String fileToken;
     private String path;
     private String contentType;
+    @Column(name = "file_size")
     private Long size;
 
     @Enumerated(EnumType.STRING)

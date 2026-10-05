@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface FileRepository extends JpaRepository<File, Long> {
     Optional<File> findByFileToken(String fileToken);
+    Optional<File> findByFileReferenceIdAndFileReferenceType(Long fileReferenceId, File.FileReferenceType fileReferenceType);
 }
